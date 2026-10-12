@@ -1,16 +1,19 @@
-Ball | Round object used in basketball
-Basket | Where you throw the ball
-Player | Person who plays the game
-Pass | Give the ball to another player
-Shoot | Throw the ball to the basket
-Dribble/Bounce | Bounce the ball while walking
-Jump | Go up in the air with your legs
-Court | Place where you play basketball
-Coach | Person who trains the team
-Backboard | Flat board behind the basket
-Rim | Metal circle of the basket
-Rebound | Get the ball after a missed shot
-Offense | Team with the ball attacking
-Defense | Team trying to stop the attack
-Score | Put the ball in the basket
-Team | Group of players playing together
+# Format: word | definition | chinese | example sentence
+# Lines starting with # are ignored
+
+Ball | Round object used in basketball | 球 | I passed the ball to my teammate.
+Basket | Where you throw the ball | 篮筐 | The player scored in the basket.
+Player | Person who plays the game | 球员 | He is a great basketball player.
+Pass | Give the ball to another player | 传球 | She made a perfect pass to me.
+Shoot | Throw the ball to the basket | 投篮 | He shoots the ball every day.
+Dribble/Bounce | Bounce the ball while walking | 运球 | I practice my dribble at home.
+Jump | Go up in the air with your legs | 跳 | The player jumps very high.
+Court | Place where you play basketball | 球场 | We play on the court every Friday.
+Coach | Person who trains the team | 教练 | The coach teaches us new plays.
+Backboard | Flat board behind the basket | 篮板 | The ball hit the backboard.
+Rim | Metal circle of the basket | 篮圈 | The ball bounced off the rim.
+Rebound | Get the ball after a missed shot | 篮板球 | He got an important rebound.
+Offense | Team with the ball attacking | 进攻 | Our offense is very strong.
+Defense | Team trying to stop the attack | 防守 | Good defense wins games.
+Score | Put the ball in the basket | 得分 | I scored two points!
+Team | Group of players playing together | 球队 | Our team is the best!
