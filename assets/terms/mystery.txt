@@ -1,0 +1,16 @@
+Ball | Round object used in basketball
+Basket | Where you throw the ball
+Player | Person who plays the game
+Pass | Give the ball to another player
+Shoot | Throw the ball to the basket
+Dribble/Bounce | Bounce the ball while walking
+Jump | Go up in the air with your legs
+Court | Place where you play basketball
+Coach | Person who trains the team
+Backboard | Flat board behind the basket
+Rim | Metal circle of the basket
+Rebound | Get the ball after a missed shot
+Offense | Team with the ball attacking
+Defense | Team trying to stop the attack
+Score | Put the ball in the basket
+Team | Group of players playing together
