@@ -3,34 +3,597 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About me · Kampa</title>
+    <title>Basketball Terms · Kampa</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Graduate&display=swap" rel="stylesheet">
+
+    <style>
+        /* =============================================
+           ESTILOS ESPECÍFICOS DE BASKETBALL TERMS
+           ============================================= */
+        .terms-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(6px);
+            border-radius: 22px;
+            padding: 20px 24px 24px 24px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.06);
+        }
+
+        .terms-header {
+            text-align: center;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .terms-header h1 {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 2rem;
+            color: #FFD700;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .terms-header .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .terms-header .subtitle-cn {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+
+        /* ---- GRID ---- */
+        .terms-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        /* ---- CARD CON FLIP ---- */
+        .term-card {
+            perspective: 1000px;
+            aspect-ratio: 1 / 1.3;
+            cursor: pointer;
+        }
+
+        .term-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            transform-style: preserve-3d;
+        }
+
+        .term-card.flipped .term-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* ---- FRENTE Y REVERSO ---- */
+        .term-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.02));
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .term-card:hover .term-face {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.15);
+        }
+
+        .term-front {
+            transform: rotateY(0deg);
+        }
+
+        .term-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+
+        /* ---- BOTÓN AUDIO (esquina superior derecha) ---- */
+        .term-audio-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #FFD700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            z-index: 10;
+        }
+
+        .term-audio-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: #FFD700;
+            transform: scale(1.1);
+        }
+
+        .term-audio-btn:active {
+            transform: scale(0.95);
+        }
+
+        .term-audio-btn.playing {
+            animation: audioPulse 0.8s ease infinite;
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #FFD700;
+        }
+
+        @keyframes audioPulse {
+            0%, 100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.9); }
+        }
+
+        /* ---- IMAGEN ---- */
+        .term-image {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            min-height: 0;
+        }
+
+        .term-image img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+        }
+
+        .term-image .placeholder {
+            font-size: 3rem;
+            color: rgba(255, 215, 0, 0.2);
+        }
+
+        /* ---- PALABRA ---- */
+        .term-word {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.15rem;
+            color: #FFD700;
+            text-align: center;
+            letter-spacing: 1px;
+            margin: 6px 0 4px 0;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+
+        /* ---- DEFINICIÓN ---- */
+        .term-definition {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            line-height: 1.3;
+            padding: 0 4px;
+            word-break: break-word;
+        }
+
+        /* ---- REVERSO: contenido ---- */
+        .term-back .term-word-cn {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            font-size: 2.4rem;
+            color: #FFD700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            text-align: center;
+            margin: 4px 0;
+            font-weight: bold;
+        }
+
+        .term-back .term-word-en {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            color: rgba(255, 215, 0, 0.7);
+            text-align: center;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .term-back .term-example {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.75);
+            text-align: center;
+            line-height: 1.4;
+            padding: 0 6px;
+            font-style: italic;
+            border-left: 2px solid rgba(255, 215, 0, 0.3);
+            border-right: 2px solid rgba(255, 215, 0, 0.3);
+            padding: 6px 10px;
+            margin: 4px 0;
+        }
+
+        /* ---- HINT DE FLIP ---- */
+        .term-flip-hint {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.25);
+            text-align: center;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ---- LOADING ---- */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .loading .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 215, 0, 0.1);
+            border-top: 4px solid #FFD700;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* =============================================
+           RESPONSIVE
+           ============================================= */
+        @media (max-width: 1100px) {
+            .terms-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+        }
+
+        @media (max-width: 850px) {
+            .terms-wrapper { padding: 16px 16px 20px 16px; }
+            .terms-header h1 { font-size: 1.5rem; }
+            .terms-header .subtitle { font-size: 0.75rem; }
+
+            .terms-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 12px;
+            }
+
+            .term-word { font-size: 1rem; }
+            .term-definition { font-size: 0.65rem; }
+            .term-back .term-word-cn { font-size: 2rem; }
+            .term-back .term-example { font-size: 0.65rem; }
+            .term-audio-btn { width: 28px; height: 28px; font-size: 0.75rem; }
+        }
+
+        @media (max-width: 650px) {
+            .terms-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .terms-wrapper { padding: 12px 12px 16px 12px; border-radius: 16px; }
+            .terms-header h1 { font-size: 1.3rem; }
+
+            .term-word { font-size: 0.9rem; }
+            .term-back .term-word-cn { font-size: 1.7rem; }
+            .term-back .term-word-en { font-size: 0.75rem; }
+            .term-back .term-example { font-size: 0.6rem; }
+        }
+
+        @media (max-width: 400px) {
+            .terms-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .terms-header h1 { font-size: 1.1rem; }
+            .terms-header .subtitle { font-size: 0.65rem; }
+
+            .term-card { aspect-ratio: 1 / 0.85; }
+            .term-image img { max-height: 100px; }
+        }
+
+        @media (min-height: 900px) {
+            .terms-wrapper { padding: 30px 35px 35px 35px; }
+            .terms-header h1 { font-size: 2.5rem; }
+
+            .terms-grid { gap: 20px; }
+            .term-word { font-size: 1.3rem; }
+            .term-definition { font-size: 0.8rem; }
+            .term-back .term-word-cn { font-size: 3rem; }
+            .term-back .term-example { font-size: 0.8rem; }
+        }
+    </style>
 </head>
 <body>
 
     <div id="header-container"></div>
 
     <main class="main-content">
-        <div class="home-wrapper">
-            <div class="welcome-section">
-                <h1>👤 About me</h1>
-                <p class="welcome-text">
-                    Coming soon. Here I'll share my professional background, my career in basketball
-                    and education, and my journey in China.
-                </p>
-                <p class="welcome-text-cn">
-                    即将推出。这里将分享我的职业背景、篮球与教育经历，以及我在中国的故事。
-                </p>
+        <div class="terms-wrapper">
+
+            <div class="terms-header">
+                <h1>🏀 BASKETBALL TERMS</h1>
+                <div class="subtitle">Learn the vocabulary from this week's lessons</div>
+                <div class="subtitle-cn">学习本周课程的词汇</div>
             </div>
+
+            <div class="terms-grid" id="termsGrid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div>Loading vocabulary...</div>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <div id="footer-container"></div>
 
+    <script src="js/config.js"></script>
     <script src="js/header.js"></script>
     <script src="js/footer.js"></script>
 
+    <script>
+        // =========================================================
+        // CONFIGURACIÓN
+        // =========================================================
+        const MYSTERY_TXT_PATH = 'assets/terms/mystery.txt';
+        const AUDIO_PATH = 'assets/audio/';
+
+        // =========================================================
+        // DOM
+        // =========================================================
+        const termsGrid = document.getElementById('termsGrid');
+
+        // =========================================================
+        // UTILIDADES
+        // =========================================================
+        function escapeHTML(str) {
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
+
+        // Para el nombre del archivo de audio: minúsculas, sin barras, espacios por guion
+        function getAudioFileName(palabra) {
+            return palabra
+                .toLowerCase()
+                .replace(/\//g, '')      // quitar barras (Dribble/Bounce → DribbleBounce)
+                .replace(/\s+/g, '-')    // espacios por guiones
+                .trim() + '.mp3';
+        }
+
+        // Para la ruta de la imagen: usar siempre [Palabra]1.png
+        // Aunque sea "Dribble/Bounce", en config.js está como "Dribble/Bounce" → Bounce1.png
+        function getImageFileName(palabra) {
+            // Buscar en config.js por palabra exacta
+            if (typeof PALABRAS_JUEGO !== 'undefined') {
+                const item = PALABRAS_JUEGO.find(p =>
+                    p.palabra.toLowerCase() === palabra.toLowerCase()
+                );
+                if (item && item.imagenes.length > 0) {
+                    return item.imagenes[0]; // siempre la primera
+                }
+            }
+            // Fallback: usar la palabra + "1.png"
+            return palabra.replace(/\//g, '').replace(/\s+/g, '') + '1.png';
+        }
+
+        // =========================================================
+        // CARGAR TXT
+        // =========================================================
+        async function cargarTerms() {
+            try {
+                console.log('🔄 Loading terms from:', MYSTERY_TXT_PATH);
+                const response = await fetch(MYSTERY_TXT_PATH);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const text = await response.text();
+
+                const terms = text
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0 && !line.startsWith('#'))
+                    .map(line => {
+                        const parts = line.split('|').map(p => p.trim());
+                        if (parts.length < 2) return null;
+                        return {
+                            palabra: parts[0],
+                            definicion: parts[1],
+                            chino: parts[2] || '',
+                            ejemplo: parts[3] || ''
+                        };
+                    })
+                    .filter(t => t !== null);
+
+                // Ordenar alfabéticamente
+                terms.sort((a, b) => a.palabra.localeCompare(b.palabra));
+
+                console.log('✅ ' + terms.length + ' terms loaded');
+                return terms;
+            } catch (error) {
+                console.error('❌ Error loading terms:', error);
+                console.warn('⚠️ Using fallback data');
+                return getFallbackTerms();
+            }
+        }
+
+        function getFallbackTerms() {
+            return [
+                { palabra: 'Backboard', definicion: 'Flat board behind the basket', chino: '篮板', ejemplo: 'The ball hit the backboard.' },
+                { palabra: 'Ball', definicion: 'Round object used in basketball', chino: '球', ejemplo: 'I passed the ball to my teammate.' },
+                { palabra: 'Basket', definicion: 'Where you throw the ball', chino: '篮筐', ejemplo: 'The player scored in the basket.' },
+                { palabra: 'Coach', definicion: 'Person who trains the team', chino: '教练', ejemplo: 'The coach teaches us new plays.' },
+                { palabra: 'Court', definicion: 'Place where you play basketball', chino: '球场', ejemplo: 'We play on the court every Friday.' },
+                { palabra: 'Defense', definicion: 'Team trying to stop the attack', chino: '防守', ejemplo: 'Good defense wins games.' },
+                { palabra: 'Dribble/Bounce', definicion: 'Bounce the ball while walking', chino: '运球', ejemplo: 'I practice my dribble at home.' },
+                { palabra: 'Jump', definicion: 'Go up in the air with your legs', chino: '跳', ejemplo: 'The player jumps very high.' },
+                { palabra: 'Offense', definicion: 'Team with the ball attacking', chino: '进攻', ejemplo: 'Our offense is very strong.' },
+                { palabra: 'Pass', definicion: 'Give the ball to another player', chino: '传球', ejemplo: 'She made a perfect pass to me.' },
+                { palabra: 'Player', definicion: 'Person who plays the game', chino: '球员', ejemplo: 'He is a great basketball player.' },
+                { palabra: 'Rebound', definicion: 'Get the ball after a missed shot', chino: '篮板球', ejemplo: 'He got an important rebound.' },
+                { palabra: 'Rim', definicion: 'Metal circle of the basket', chino: '篮圈', ejemplo: 'The ball bounced off the rim.' },
+                { palabra: 'Score', definicion: 'Put the ball in the basket', chino: '得分', ejemplo: 'I scored two points!' },
+                { palabra: 'Shoot', definicion: 'Throw the ball to the basket', chino: '投篮', ejemplo: 'He shoots the ball every day.' },
+                { palabra: 'Team', definicion: 'Group of players playing together', chino: '球队', ejemplo: 'Our team is the best!' }
+            ].sort((a, b) => a.palabra.localeCompare(b.palabra));
+        }
+
+        // =========================================================
+        // CREAR TARJETA
+        // =========================================================
+        function crearTarjeta(term) {
+            const card = document.createElement('div');
+            card.className = 'term-card';
+            card.dataset.word = term.palabra;
+
+            const imageFile = getImageFileName(term.palabra);
+            const audioFile = getAudioFileName(term.palabra);
+            const imagePath = RUTA_TERMS + imageFile;
+            const audioPath = AUDIO_PATH + audioFile;
+
+            card.innerHTML = `
+                <div class="term-card-inner">
+
+                    <!-- FRENTE -->
+                    <div class="term-face term-front">
+                        <button class="term-audio-btn" title="Listen" data-audio="${audioPath}">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <div class="term-image">
+                            <img src="${imagePath}" alt="${escapeHTML(term.palabra)}" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\\'placeholder\\'>🖼️</div>';">
+                        </div>
+                        <div class="term-word">${escapeHTML(term.palabra)}</div>
+                        <div class="term-definition">${escapeHTML(term.definicion)}</div>
+                        <div class="term-flip-hint">🔄 Tap to flip</div>
+                    </div>
+
+                    <!-- REVERSO -->
+                    <div class="term-face term-back">
+                        <button class="term-audio-btn" title="Listen" data-audio="${audioPath}">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        <div class="term-image">
+                            <img src="${imagePath}" alt="${escapeHTML(term.palabra)}" onerror="this.style.display='none'; this.parentNode.innerHTML='<div class=\\'placeholder\\'>🖼️</div>';">
+                        </div>
+                        <div class="term-word-cn">${escapeHTML(term.chino)}</div>
+                        <div class="term-word-en">${escapeHTML(term.palabra)}</div>
+                        <div class="term-example">"${escapeHTML(term.ejemplo)}"</div>
+                        <div class="term-flip-hint">🔄 Tap to flip</div>
+                    </div>
+
+                </div>
+            `;
+
+            // Evento flip (clic en cualquier parte excepto el botón de audio)
+            card.addEventListener('click', function(e) {
+                if (e.target.closest('.term-audio-btn')) return; // ignorar botón audio
+                card.classList.toggle('flipped');
+            });
+
+            // Eventos del botón de audio
+            const audioBtns = card.querySelectorAll('.term-audio-btn');
+            audioBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    reproducirAudio(audioPath, btn);
+                });
+            });
+
+            return card;
+        }
+
+        // =========================================================
+        // REPRODUCIR AUDIO
+        // =========================================================
+        let audioActual = null;
+
+        function reproducirAudio(ruta, btn) {
+            // Si ya hay uno sonando, para
+            if (audioActual) {
+                audioActual.pause();
+                audioActual.currentTime = 0;
+            }
+
+            const audio = new Audio(ruta);
+            audioActual = audio;
+
+            audio.addEventListener('play', () => {
+                btn.classList.add('playing');
+            });
+
+            audio.addEventListener('ended', () => {
+                btn.classList.remove('playing');
+            });
+
+            audio.addEventListener('error', () => {
+                btn.classList.remove('playing');
+                console.warn('⚠️ Audio not found:', ruta);
+            });
+
+            audio.play().catch(err => {
+                console.warn('⚠️ Could not play audio:', err);
+                btn.classList.remove('playing');
+            });
+        }
+
+        // =========================================================
+        // RENDERIZAR
+        // =========================================================
+        function renderizarTerms(terms) {
+            termsGrid.innerHTML = '';
+
+            if (terms.length === 0) {
+                termsGrid.innerHTML = '<div class="loading">No terms found.</div>';
+                return;
+            }
+
+            terms.forEach(term => {
+                const card = crearTarjeta(term);
+                termsGrid.appendChild(card);
+            });
+        }
+
+        // =========================================================
+        // INICIALIZACIÓN
+        // =========================================================
+        (async function init() {
+            const terms = await cargarTerms();
+            renderizarTerms(terms);
+
+            console.log('🏀 BASKETBALL TERMS - Kampa Games');
+            console.log('📝 ' + terms.length + ' terms loaded');
+            console.log('🔊 Audio files expected in:', AUDIO_PATH);
+        })();
+    </script>
 </body>
 </html>
