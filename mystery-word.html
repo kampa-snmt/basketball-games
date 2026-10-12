@@ -1,0 +1,1408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Mystery Word · Kampa Games</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Graduate&display=swap" rel="stylesheet">
+
+    <style>
+        /* =============================================
+           ESTILOS ESPECÍFICOS DEL MYSTERY WORD
+           ============================================= */
+        .mystery-wrapper {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(6px);
+            border-radius: 22px;
+            padding: 16px 20px 18px 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .mystery-header {
+            text-align: center;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.06);
+        }
+
+        .mystery-header h1 {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.5rem;
+            color: #FFD700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.12);
+            letter-spacing: 2px;
+        }
+
+        .mystery-header .subtitle {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+        }
+
+        /* ---- MODE SELECTOR ---- */
+        .modo-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .modo-selector .modo-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .modo-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+            padding: 8px 18px;
+            border-radius: 14px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 0.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .modo-btn small {
+            font-size: 0.55rem;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: normal;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
+
+        .modo-btn:hover:not(.active) {
+            border-color: rgba(255, 215, 0, 0.5);
+            color: rgba(255, 255, 255, 0.9);
+            transform: translateY(-1px);
+        }
+
+        .modo-btn.active {
+            background: linear-gradient(145deg, #FFD700, #e6b800);
+            border-color: #FFD700;
+            color: #1a2a6c;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .modo-btn.active small {
+            color: #1a2a6c;
+            opacity: 0.8;
+        }
+
+        /* ---- HINT SELECTOR ---- */
+        .setup-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .setup-title {
+            text-align: center;
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.1rem;
+            color: #FFD700;
+            letter-spacing: 1px;
+        }
+
+        .setup-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.7rem;
+        }
+
+        .pistas-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            overflow-y: auto;
+            padding: 4px;
+            flex: 1;
+            min-height: 0;
+            align-content: start;
+        }
+
+        .pistas-grid::-webkit-scrollbar { width: 6px; }
+        .pistas-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        .pista-card {
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.03));
+            border: 2px solid rgba(255, 215, 0, 0.2);
+            border-radius: 14px;
+            padding: 12px 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 5px;
+            min-height: 120px;
+        }
+
+        .pista-card:hover {
+            transform: translateY(-4px);
+            border-color: #FFD700;
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.2);
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+        }
+
+        .pista-card .pista-icon {
+            font-size: 1.4rem;
+        }
+
+        .pista-card .pista-text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            line-height: 1.3;
+            word-break: break-word;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .pista-card .pista-info {
+            font-size: 0.6rem;
+            color: #FFD700;
+            opacity: 0.8;
+            letter-spacing: 0.5px;
+            font-weight: bold;
+        }
+
+        /* ---- GAME AREA ---- */
+        .game-area {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+            gap: 10px;
+        }
+
+        .game-area.active {
+            display: flex;
+        }
+
+        /* ---- HINT PANEL ---- */
+        .pista-panel {
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.03));
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 14px;
+            padding: 10px 16px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .pista-panel .pista-label {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 0.7rem;
+            color: #FFD700;
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 4px;
+            opacity: 0.8;
+        }
+
+        .pista-panel .pista-text {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.15rem;
+            color: #FFD700;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        .modo-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-top: 6px;
+            padding: 2px 10px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 12px;
+            font-size: 0.55rem;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .modo-indicator.facil { border: 1px solid rgba(76, 175, 80, 0.4); color: #4caf50; }
+        .modo-indicator.dificil { border: 1px solid rgba(255, 107, 107, 0.4); color: #ff6b6b; }
+
+        /* ---- PHASE PANEL ---- */
+        .fase-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 8px 20px;
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.12), rgba(255, 215, 0, 0.04));
+            border: 1px solid rgba(255, 215, 0, 0.25);
+            border-radius: 30px;
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            color: #FFD700;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .fase-panel.revelando {
+            background: linear-gradient(145deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.05));
+            border-color: rgba(76, 175, 80, 0.4);
+            color: #4caf50;
+        }
+
+        .fase-panel .fase-icon { font-size: 1.1rem; }
+
+        .fase-panel .fase-timer {
+            background: rgba(0, 0, 0, 0.35);
+            padding: 2px 12px;
+            border-radius: 20px;
+            min-width: 42px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .fase-panel.revelando .fase-timer {
+            background: rgba(76, 175, 80, 0.3);
+            color: #fff;
+        }
+
+        /* ---- IMAGE (only EASY or on victory) ---- */
+        .mystery-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            transition: all 0.4s ease;
+        }
+
+        .mystery-image-container.hidden {
+            display: none;
+        }
+
+        .mystery-image-container img {
+            max-width: 140px;
+            max-height: 140px;
+            object-fit: contain;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border: 2px solid rgba(255, 215, 0, 0.15);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .mystery-image-container .placeholder {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 2px dashed rgba(255, 215, 0, 0.15);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        /* ---- PUZZLE BOARD ---- */
+        .puzzle-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 0;
+            padding: 4px 0;
+        }
+
+        .puzzle-board {
+            background: linear-gradient(145deg, #0f1f4a, #0a1628);
+            padding: 14px 18px;
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid #FFD700;
+            max-width: 100%;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tile {
+            height: 54px;
+            min-width: 42px;
+            background: linear-gradient(145deg, #f5f5f8, #e8e8ed);
+            border: 2px solid #1a2a6c;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #1a2a6c;
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            flex-shrink: 0;
+            font-size: 1.6rem;
+            text-transform: uppercase;
+        }
+
+        .tile.space {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            width: 18px;
+            min-width: 18px;
+        }
+
+        .tile.revealed {
+            background: linear-gradient(145deg, #FFD700, #e6b800);
+            color: #1a2a6c;
+            border-color: #FFD700;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.3);
+            box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.1), 0 0 15px rgba(255, 215, 0, 0.3);
+            animation: fadeIn 0.35s ease;
+        }
+
+        .tile.special-char {
+            background: #e0e0e0;
+            color: #666;
+            border-color: #999;
+        }
+
+        @keyframes flip {
+            0% { transform: rotateY(0deg); background: white; color: #1a2a6c; }
+            50% { transform: rotateY(90deg); background: #FFD700; color: #000; }
+            100% { transform: rotateY(0deg); background: #FFD700; color: #1a2a6c; }
+        }
+
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 rgba(255, 215, 0, 0.7); }
+            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.9); }
+            100% { box-shadow: 0 0 0 rgba(255, 215, 0, 0.7); }
+        }
+
+        .tile.victory {
+            animation: flip 0.6s ease forwards, pulse-gold 2s infinite 0.6s;
+        }
+
+        /* ---- MESSAGE ---- */
+        .message-container {
+            min-height: 26px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #FFD700;
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+        }
+
+        .message-container.acierto { color: #4caf50; }
+        .message-container.error { color: #ff6b6b; }
+
+        /* ---- BUTTONS ---- */
+        .btn {
+            padding: 5px 14px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-gold { background: #FFD700; color: #1a2a6c; }
+        .btn-gold:hover:not(:disabled) { background: #FFE44D; }
+
+        .btn-outline {
+            background: transparent;
+            color: #FFD700;
+            border: 1.5px solid rgba(255, 215, 0, 0.35);
+        }
+        .btn-outline:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.06);
+            border-color: #FFD700;
+        }
+
+        .btn-danger {
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+        }
+        .btn-danger:hover:not(:disabled) { background: #dc3545; }
+
+        .game-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            padding-bottom: 4px;
+        }
+
+        /* ---- VICTORY OVERLAY ---- */
+        .victory-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .victory-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .victory-content {
+            background: linear-gradient(145deg, #0f1f4a, #080e20);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            padding: 30px 35px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.08);
+            animation: victoryIn 0.5s ease;
+        }
+
+        @keyframes victoryIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .victory-content .trophy {
+            font-size: 3.5rem;
+            margin-bottom: 6px;
+        }
+
+        .victory-content h2 {
+            color: #FFD700;
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .victory-content .sub {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+        }
+
+        .victory-content .answer {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.8rem;
+            color: #FFD700;
+            margin-bottom: 16px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+
+        .victory-content .btn {
+            font-size: 0.95rem;
+            padding: 10px 30px;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 850px) {
+            .mystery-wrapper { padding: 12px 14px 14px 14px; }
+            .mystery-header h1 { font-size: 1.2rem; }
+
+            .pistas-grid { gap: 8px; }
+            .pista-card { padding: 10px 8px; min-height: 105px; }
+            .pista-card .pista-text { font-size: 0.68rem; }
+            .pista-card .pista-icon { font-size: 1.2rem; }
+
+            .pista-panel .pista-text { font-size: 1rem; }
+            .tile { height: 46px; min-width: 36px; font-size: 1.4rem; }
+            .tile.space { width: 14px; min-width: 14px; }
+
+            .mystery-image-container img { max-width: 110px; max-height: 110px; }
+
+            .btn { padding: 4px 10px; font-size: 0.6rem; }
+            .modo-btn { padding: 6px 14px; font-size: 0.7rem; }
+            .modo-btn small { font-size: 0.5rem; }
+            .fase-panel { font-size: 0.8rem; padding: 6px 16px; }
+        }
+
+        @media (max-width: 550px) {
+            .mystery-wrapper { padding: 8px 8px 10px 8px; border-radius: 14px; }
+            .mystery-header h1 { font-size: 1rem; }
+
+            .pistas-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .pista-card { padding: 8px 6px; min-height: 90px; }
+            .pista-card .pista-text { font-size: 0.6rem; }
+            .pista-card .pista-icon { font-size: 1rem; }
+            .pista-card .pista-info { font-size: 0.5rem; }
+
+            .pista-panel { padding: 8px 12px; }
+            .pista-panel .pista-label { font-size: 0.6rem; }
+            .pista-panel .pista-text { font-size: 0.85rem; }
+
+            .tile { height: 38px; min-width: 28px; font-size: 1.1rem; border-radius: 6px; border-width: 2px; }
+            .tile.space { width: 10px; min-width: 10px; }
+            .row { gap: 4px; }
+            .puzzle-board { padding: 10px 12px; border-width: 2px; border-radius: 12px; }
+
+            .mystery-image-container img { max-width: 90px; max-height: 90px; }
+
+            .message-container { font-size: 0.75rem; }
+            .btn { padding: 3px 8px; font-size: 0.5rem; border-radius: 18px; }
+
+            .modo-btn { padding: 5px 10px; font-size: 0.6rem; }
+            .modo-btn small { display: none; }
+            .modo-selector .modo-label { display: none; }
+
+            .fase-panel { font-size: 0.7rem; padding: 5px 12px; gap: 8px; }
+        }
+
+        @media (max-width: 400px) {
+            .mystery-wrapper { padding: 6px 5px 8px 5px; }
+            .pistas-grid { grid-template-columns: repeat(2, 1fr); gap: 5px; }
+            .pista-card { padding: 8px 6px; min-height: 80px; }
+            .pista-card .pista-text { font-size: 0.55rem; }
+
+            .tile { height: 32px; min-width: 24px; font-size: 0.9rem; }
+            .tile.space { width: 8px; min-width: 8px; }
+
+            .mystery-image-container img { max-width: 70px; max-height: 70px; }
+
+            .mystery-header h1 { font-size: 0.85rem; }
+            .btn { padding: 2px 6px; font-size: 0.4rem; }
+        }
+
+        @media (min-height: 900px) {
+            .mystery-wrapper { padding: 20px 30px 24px 30px; }
+            .pista-card { min-height: 140px; padding: 16px 12px; }
+            .pista-card .pista-text { font-size: 0.9rem; }
+            .pista-card .pista-icon { font-size: 1.8rem; }
+
+            .pista-panel .pista-text { font-size: 1.4rem; }
+            .tile { height: 68px; min-width: 52px; font-size: 2rem; }
+
+            .mystery-image-container img { max-width: 180px; max-height: 180px; }
+
+            .mystery-header h1 { font-size: 2rem; }
+            .btn { padding: 8px 20px; font-size: 0.85rem; }
+            .message-container { font-size: 1.1rem; }
+            .fase-panel { font-size: 1.1rem; padding: 10px 24px; }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER (inyectado) -->
+    <div id="header-container"></div>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="main-content">
+        <div class="mystery-wrapper">
+
+            <!-- TÍTULO -->
+            <div class="mystery-header">
+                <h1>🔤 MYSTERY WORD</h1>
+                <div class="subtitle">Watch the word reveal letter by letter!</div>
+            </div>
+
+            <!-- SELECTOR DE MODO -->
+            <div class="modo-selector">
+                <span class="modo-label">MODE:</span>
+                <button class="modo-btn active" id="modoFacil" data-modo="facil">
+                    ✅ EASY <small>sequential</small>
+                </button>
+                <button class="modo-btn" id="modoDificil" data-modo="dificil">
+                    🔥 HARD <small>random</small>
+                </button>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- SELECTOR DE PISTAS -->
+            <!-- ============================================ -->
+            <div class="setup-panel" id="setupPanel">
+                <div class="setup-title">💡 Choose a hint</div>
+                <div class="setup-subtitle">Each card is a different word to guess</div>
+                <div class="pistas-grid" id="pistasGrid"></div>
+            </div>
+
+            <!-- ============================================ -->
+            <!-- ZONA DE JUEGO -->
+            <!-- ============================================ -->
+            <div class="game-area" id="gameArea">
+
+                <!-- PISTA -->
+                <div class="pista-panel">
+                    <span class="pista-label">💡 HINT</span>
+                    <div class="pista-text" id="pistaText">—</div>
+                    <div class="modo-indicator facil" id="modoIndicator">✅ EASY · sequential</div>
+                </div>
+
+                <!-- IMAGEN (visible según modo) -->
+                <div class="mystery-image-container hidden" id="imageContainer">
+                    <img id="mysteryImage" src="" alt="Word image">
+                </div>
+
+                <!-- PANEL DE FASE -->
+                <div class="fase-panel" id="fasePanel">
+                    <span class="fase-icon" id="faseIcon">📖</span>
+                    <span class="fase-text" id="faseText">Read the hint...</span>
+                    <span class="fase-timer" id="faseTimer">10</span>
+                </div>
+
+                <!-- TABLERO -->
+                <div class="puzzle-container">
+                    <div class="puzzle-board" id="puzzleBoard"></div>
+                </div>
+
+                <!-- MENSAJE -->
+                <div class="message-container" id="messageContainer">📖 Read the hint...</div>
+
+                <!-- BOTONES -->
+                <div class="game-buttons">
+                    <button class="btn btn-gold" id="revealBtn">🎯 Reveal Answer</button>
+                    <button class="btn btn-outline" id="skipBtn">⏭️ Skip Wait</button>
+                    <button class="btn btn-outline" id="newGameBtn">🔄 New</button>
+                    <button class="btn btn-danger" id="backBtn">⬅️ Back</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- FOOTER (inyectado) -->
+    <div id="footer-container"></div>
+
+    <!-- OVERLAY VICTORIA -->
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-content">
+            <div class="trophy" id="resultEmoji">🏆</div>
+            <h2 id="resultTitle">¡Correct!</h2>
+            <div class="sub" id="resultSub">You guessed the word!</div>
+            <div class="answer" id="resultAnswer"></div>
+            <button class="btn btn-gold" id="playAgainBtn">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/footer.js"></script>
+
+    <script>
+        // =========================================================
+        // CONFIGURACIÓN DE TIEMPOS
+        // =========================================================
+        const READ_TIME = 10;
+        const TIME_BETWEEN_LETTERS = 2000;
+
+        // =========================================================
+        // RUTA DEL ARCHIVO TXT
+        // =========================================================
+        const MYSTERY_TXT_PATH = 'assets/terms/mystery.txt';
+
+        // =========================================================
+        // ESTADO
+        // =========================================================
+        let estado = {
+            frases: [],
+            fraseActual: null,
+            fraseOculta: [],
+            juegoActivo: false,
+            victoriaLograda: false,
+            elementosTile: [],
+            fase: 'idle',
+            temporizador: null,
+            intervaloRevelado: null,
+            letrasPendientes: [],
+            tiempoRestante: 0,
+            modo: 'facil'
+        };
+
+        // =========================================================
+        // DOM
+        // =========================================================
+        const setupPanel = document.getElementById('setupPanel');
+        const pistasGrid = document.getElementById('pistasGrid');
+        const gameArea = document.getElementById('gameArea');
+        const pistaText = document.getElementById('pistaText');
+        const puzzleBoard = document.getElementById('puzzleBoard');
+        const messageContainer = document.getElementById('messageContainer');
+        const revealBtn = document.getElementById('revealBtn');
+        const skipBtn = document.getElementById('skipBtn');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const backBtn = document.getElementById('backBtn');
+        const victoryOverlay = document.getElementById('victoryOverlay');
+        const resultEmoji = document.getElementById('resultEmoji');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultSub = document.getElementById('resultSub');
+        const resultAnswer = document.getElementById('resultAnswer');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const fasePanel = document.getElementById('fasePanel');
+        const faseIcon = document.getElementById('faseIcon');
+        const faseText = document.getElementById('faseText');
+        const faseTimer = document.getElementById('faseTimer');
+        const modoFacilBtn = document.getElementById('modoFacil');
+        const modoDificilBtn = document.getElementById('modoDificil');
+        const modoIndicator = document.getElementById('modoIndicator');
+        const imageContainer = document.getElementById('imageContainer');
+        const mysteryImage = document.getElementById('mysteryImage');
+
+        // =========================================================
+        // UTILIDADES
+        // =========================================================
+        function escapeHTML(str) {
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
+
+        function esCaracterEspecial(c) {
+            return ',.;:¿?¡!"\'-'.indexOf(c) !== -1;
+        }
+
+        function normalizarLetra(letra) {
+            const mapa = {
+                'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ü': 'U',
+                'À': 'A', 'È': 'E', 'Ì': 'I', 'Ò': 'O', 'Ù': 'U'
+            };
+            return mapa[letra] || letra;
+        }
+
+        function contarVocalesUnicas(palabra) {
+            const vocales = 'AEIOU';
+            const vistas = new Set();
+            for (const c of palabra.toUpperCase()) {
+                if (vocales.includes(normalizarLetra(c))) vistas.add(c);
+            }
+            return vistas.size;
+        }
+
+        function contarConsonantesUnicas(palabra) {
+            const vocales = 'AEIOU';
+            const vistas = new Set();
+            for (const c of palabra.toUpperCase()) {
+                const n = normalizarLetra(c);
+                if (/[A-ZÑ]/.test(n) && !vocales.includes(n)) vistas.add(c);
+            }
+            return vistas.size;
+        }
+
+        // =========================================================
+        // CARGAR TXT
+        // =========================================================
+        async function cargarFrases() {
+            try {
+                console.log('🔄 Loading mystery.txt from:', MYSTERY_TXT_PATH);
+                const response = await fetch(MYSTERY_TXT_PATH);
+                if (!response.ok) throw new Error('HTTP ' + response.status);
+                const text = await response.text();
+
+                const frases = text
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 0 && !line.startsWith('#'))
+                    .map(line => {
+                        const parts = line.split('|').map(p => p.trim());
+                        if (parts.length < 2) return null;
+                        return {
+                            frase: parts[0],
+                            pista: parts[1]
+                        };
+                    })
+                    .filter(f => f !== null);
+
+                console.log('✅ ' + frases.length + ' words loaded from mystery.txt');
+                return frases;
+            } catch (error) {
+                console.error('❌ Error loading mystery.txt:', error);
+                console.warn('⚠️ Using fallback data');
+                return getFallbackFrases();
+            }
+        }
+
+        function getFallbackFrases() {
+            return [
+                { frase: 'Ball', pista: 'Round object used in basketball' },
+                { frase: 'Basket', pista: 'Where you throw the ball' },
+                { frase: 'Player', pista: 'Person who plays the game' },
+                { frase: 'Pass', pista: 'Give the ball to another player' },
+                { frase: 'Shoot', pista: 'Throw the ball to the basket' },
+                { frase: 'Dribble/Bounce', pista: 'Bounce the ball while walking' },
+                { frase: 'Jump', pista: 'Go up in the air with your legs' },
+                { frase: 'Court', pista: 'Place where you play basketball' },
+                { frase: 'Coach', pista: 'Person who trains the team' },
+                { frase: 'Backboard', pista: 'Flat board behind the basket' },
+                { frase: 'Rim', pista: 'Metal circle of the basket' },
+                { frase: 'Rebound', pista: 'Get the ball after a missed shot' },
+                { frase: 'Offense', pista: 'Team with the ball attacking' },
+                { frase: 'Defense', pista: 'Team trying to stop the attack' },
+                { frase: 'Score', pista: 'Put the ball in the basket' },
+                { frase: 'Team', pista: 'Group of players playing together' }
+            ];
+        }
+
+        // =========================================================
+        // ENCONTRAR IMAGEN DE LA PALABRA
+        // =========================================================
+        function encontrarImagenDePalabra(palabra) {
+            // Buscar en PALABRAS_JUEGO de config.js
+            if (typeof PALABRAS_JUEGO === 'undefined') return null;
+
+            const item = PALABRAS_JUEGO.find(p =>
+                p.palabra.toLowerCase() === palabra.toLowerCase()
+            );
+
+            if (!item || item.imagenes.length === 0) return null;
+
+            const randomIdx = Math.floor(Math.random() * item.imagenes.length);
+            return RUTA_TERMS + item.imagenes[randomIdx];
+        }
+
+        // =========================================================
+        // RENDERIZAR SELECTOR
+        // =========================================================
+        function renderizarSelector() {
+            pistasGrid.innerHTML = '';
+
+            // Barajar el orden de las tarjetas
+            const indices = estado.frases.map((_, i) => i);
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+
+            indices.forEach(indexOriginal => {
+                const f = estado.frases[indexOriginal];
+                const vocales = contarVocalesUnicas(f.frase);
+                const consonantes = contarConsonantesUnicas(f.frase);
+
+                const card = document.createElement('div');
+                card.className = 'pista-card';
+                card.innerHTML =
+                    '<div class="pista-icon">💡</div>' +
+                    '<div class="pista-text">' + escapeHTML(f.pista) + '</div>' +
+                    '<div class="pista-info">' + f.frase.length + ' letters</div>';
+
+                card.addEventListener('click', () => iniciarPartida(indexOriginal));
+                pistasGrid.appendChild(card);
+            });
+        }
+
+        // =========================================================
+        // SELECCIÓN DE MODO
+        // =========================================================
+        function seleccionarModo(modo) {
+            if (estado.juegoActivo && !estado.victoriaLograda) {
+                return; // No cambiar modo durante partida activa
+            }
+
+            estado.modo = modo;
+            modoFacilBtn.classList.toggle('active', modo === 'facil');
+            modoDificilBtn.classList.toggle('active', modo === 'dificil');
+
+            if (modo === 'facil') {
+                modoIndicator.textContent = '✅ EASY · sequential';
+                modoIndicator.className = 'modo-indicator facil';
+            } else {
+                modoIndicator.textContent = '🔥 HARD · random';
+                modoIndicator.className = 'modo-indicator dificil';
+            }
+
+            try { localStorage.setItem('mystery_modo', modo); } catch (e) {}
+        }
+
+        modoFacilBtn.addEventListener('click', () => seleccionarModo('facil'));
+        modoDificilBtn.addEventListener('click', () => seleccionarModo('dificil'));
+
+        // =========================================================
+        // DISTRIBUCIÓN DEL TABLERO
+        // =========================================================
+        function calcularDistribucionOptima(frase) {
+            const palabras = frase.split(' ');
+            const filas = [];
+            let filaActual = [];
+            let longitudFilaActual = 0;
+            const MAX_POR_FILA = 18;
+            const MIN_POR_FILA = 10;
+            const MAX_FILAS = 5;
+
+            for (let i = 0; i < palabras.length; i++) {
+                const palabra = palabras[i];
+                const longitudPalabra = palabra.length;
+
+                if (longitudFilaActual === 0) {
+                    if (longitudPalabra >= MAX_POR_FILA - 2) {
+                        if (filaActual.length > 0) filas.push([...filaActual]);
+                        filas.push([palabra]);
+                        filaActual = [];
+                        longitudFilaActual = 0;
+                    } else {
+                        filaActual.push(palabra);
+                        longitudFilaActual = longitudPalabra;
+                    }
+                } else {
+                    const longitudConEspacio = longitudFilaActual + 1 + longitudPalabra;
+                    if (longitudConEspacio <= MAX_POR_FILA) {
+                        filaActual.push(palabra);
+                        longitudFilaActual = longitudConEspacio;
+                    } else if (filas.length + 1 < MAX_FILAS) {
+                        if (longitudFilaActual < MIN_POR_FILA && longitudConEspacio <= MAX_POR_FILA + 3) {
+                            filaActual.push(palabra);
+                            longitudFilaActual = longitudConEspacio;
+                        } else {
+                            filas.push([...filaActual]);
+                            filaActual = [palabra];
+                            longitudFilaActual = longitudPalabra;
+                        }
+                    } else {
+                        filaActual.push(palabra);
+                        longitudFilaActual = longitudConEspacio;
+                    }
+                }
+            }
+
+            if (filaActual.length > 0) filas.push(filaActual);
+            return filas;
+        }
+
+        function crearTablero() {
+            puzzleBoard.innerHTML = '';
+            estado.elementosTile = [];
+            estado.fraseOculta = [];
+
+            const distribucion = calcularDistribucionOptima(estado.fraseActual.frase.toUpperCase());
+
+            distribucion.forEach(palabrasFila => {
+                if (palabrasFila.length === 0) {
+                    const row = document.createElement('div');
+                    row.className = 'row';
+                    puzzleBoard.appendChild(row);
+                    return;
+                }
+
+                const row = document.createElement('div');
+                row.className = 'row';
+
+                const filaCompleta = palabrasFila.join(' ');
+
+                for (let i = 0; i < filaCompleta.length; i++) {
+                    const tile = document.createElement('div');
+                    const caracter = filaCompleta[i];
+
+                    if (caracter === ' ') {
+                        tile.className = 'tile space';
+                        tile.textContent = '';
+                        estado.fraseOculta.push({ char: ' ', type: 'space', revealed: true, element: tile });
+                    } else if (esCaracterEspecial(caracter)) {
+                        tile.className = 'tile special-char';
+                        tile.textContent = caracter;
+                        estado.fraseOculta.push({ char: caracter, type: 'special', revealed: true, element: tile });
+                    } else {
+                        tile.className = 'tile';
+                        tile.textContent = '_';
+                        tile.dataset.letra = caracter;
+                        estado.fraseOculta.push({ char: caracter, type: 'letter', revealed: false, element: tile });
+                        estado.elementosTile.push(tile);
+                    }
+
+                    row.appendChild(tile);
+                }
+
+                puzzleBoard.appendChild(row);
+            });
+        }
+
+        // =========================================================
+        // IMAGEN
+        // =========================================================
+        function mostrarImagen() {
+            const ruta = encontrarImagenDePalabra(estado.fraseActual.frase);
+            if (ruta) {
+                mysteryImage.src = ruta;
+                mysteryImage.onerror = function() {
+                    // Intentar JPG
+                    this.src = ruta.replace('.png', '.jpg');
+                    this.onerror = function() {
+                        imageContainer.classList.add('hidden');
+                    };
+                };
+                imageContainer.classList.remove('hidden');
+            } else {
+                imageContainer.classList.add('hidden');
+            }
+        }
+
+        function ocultarImagen() {
+            imageContainer.classList.add('hidden');
+        }
+
+        // =========================================================
+        // MENSAJES Y FASES
+        // =========================================================
+        function mostrarMensaje(texto, tipo) {
+            messageContainer.textContent = texto;
+            messageContainer.className = 'message-container';
+            if (tipo) messageContainer.classList.add(tipo);
+        }
+
+        function actualizarFaseUI() {
+            fasePanel.classList.toggle('revelando', estado.fase === 'revealing');
+
+            if (estado.fase === 'reading') {
+                faseIcon.textContent = '📖';
+                faseText.textContent = 'Read the hint...';
+                faseTimer.textContent = estado.tiempoRestante;
+            } else if (estado.fase === 'revealing') {
+                faseIcon.textContent = '🔤';
+                faseText.textContent = 'Letters revealing...';
+                faseTimer.textContent = '✏️';
+            } else if (estado.fase === 'done') {
+                faseIcon.textContent = '✅';
+                faseText.textContent = 'Word complete!';
+                faseTimer.textContent = '🎉';
+            } else {
+                faseIcon.textContent = '⏸️';
+                faseText.textContent = 'Ready';
+                faseTimer.textContent = '—';
+            }
+        }
+
+        // =========================================================
+        // TEMPORIZADORES
+        // =========================================================
+        function limpiarTemporizadores() {
+            if (estado.temporizador) {
+                clearInterval(estado.temporizador);
+                estado.temporizador = null;
+            }
+            if (estado.intervaloRevelado) {
+                clearInterval(estado.intervaloRevelado);
+                estado.intervaloRevelado = null;
+            }
+        }
+
+        function iniciarCuentaAtras() {
+            estado.fase = 'reading';
+            estado.tiempoRestante = READ_TIME;
+            actualizarFaseUI();
+
+            estado.temporizador = setInterval(() => {
+                estado.tiempoRestante--;
+                actualizarFaseUI();
+
+                if (estado.tiempoRestante <= 0) {
+                    clearInterval(estado.temporizador);
+                    estado.temporizador = null;
+                    iniciarRevelado();
+                }
+            }, 1000);
+        }
+
+        function iniciarRevelado() {
+            estado.fase = 'revealing';
+            actualizarFaseUI();
+            mostrarMensaje('🔤 Letters are revealing...');
+
+            const letrasUnicas = [];
+            const vistas = new Set();
+            estado.fraseOculta.forEach(item => {
+                if (item.type === 'letter' && !vistas.has(item.char)) {
+                    vistas.add(item.char);
+                    letrasUnicas.push(item.char);
+                }
+            });
+
+            if (estado.modo === 'dificil') {
+                for (let i = letrasUnicas.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [letrasUnicas[i], letrasUnicas[j]] = [letrasUnicas[j], letrasUnicas[i]];
+                }
+            }
+
+            estado.letrasPendientes = letrasUnicas;
+            let indice = 0;
+
+            if (estado.letrasPendientes.length > 0) {
+                revelarLetra(estado.letrasPendientes[0]);
+                indice = 1;
+            }
+
+            if (indice >= estado.letrasPendientes.length) return;
+
+            estado.intervaloRevelado = setInterval(() => {
+                if (indice >= estado.letrasPendientes.length) {
+                    clearInterval(estado.intervaloRevelado);
+                    estado.intervaloRevelado = null;
+                    return;
+                }
+
+                const letra = estado.letrasPendientes[indice];
+                revelarLetra(letra);
+                indice++;
+
+                if (indice >= estado.letrasPendientes.length) {
+                    clearInterval(estado.intervaloRevelado);
+                    estado.intervaloRevelado = null;
+                }
+            }, TIME_BETWEEN_LETTERS);
+        }
+
+        function revelarLetra(letra) {
+            const letraNorm = normalizarLetra(letra);
+            let reveladas = 0;
+
+            estado.fraseOculta.forEach(item => {
+                if (item.type === 'letter' && !item.revealed && normalizarLetra(item.char) === letraNorm) {
+                    item.revealed = true;
+                    item.element.textContent = item.char;
+                    item.element.classList.add('revealed');
+                    reveladas++;
+                }
+            });
+
+            if (reveladas > 0) {
+                mostrarMensaje(
+                    '🔤 "' + letra + '" × ' + reveladas + (reveladas > 1 ? ' letters!' : ' letter!'),
+                    'acierto'
+                );
+            }
+
+            verificarVictoria();
+        }
+
+        function verificarVictoria() {
+            const todasDescubiertas = estado.fraseOculta.every(item =>
+                item.type !== 'letter' || item.revealed
+            );
+            if (todasDescubiertas && !estado.victoriaLograda) {
+                finalizarJuego(true);
+            }
+        }
+
+        function animarVictoria() {
+            return new Promise(resolve => {
+                if (estado.elementosTile.length === 0) return resolve();
+                estado.elementosTile.forEach((tile, index) => {
+                    setTimeout(() => {
+                        tile.classList.add('victory');
+                        tile.textContent = tile.dataset.letra;
+                        if (index === estado.elementosTile.length - 1) {
+                            setTimeout(resolve, 800);
+                        }
+                    }, index * 120);
+                });
+            });
+        }
+
+        async function finalizarJuego(victoria) {
+            if (estado.victoriaLograda) return;
+
+            limpiarTemporizadores();
+            estado.fase = 'done';
+            actualizarFaseUI();
+
+            if (victoria) {
+                estado.victoriaLograda = true;
+                estado.juegoActivo = false;
+
+                // En modo HARD, mostrar la imagen al acabar
+                if (estado.modo === 'dificil') {
+                    mostrarImagen();
+                }
+
+                mostrarMensaje('🎉 VICTORY! Word completed!', 'acierto');
+                await animarVictoria();
+
+                resultEmoji.textContent = '🏆';
+                resultTitle.textContent = '¡Congratulations!';
+                resultSub.textContent = 'You guessed the word! 🎉';
+                resultAnswer.textContent = estado.fraseActual.frase;
+
+                setTimeout(() => {
+                    victoryOverlay.classList.add('active');
+                }, 400);
+            }
+        }
+
+        function revelarTodo() {
+            if (!estado.juegoActivo || estado.victoriaLograda) return;
+            limpiarTemporizadores();
+
+            estado.fraseOculta.forEach(item => {
+                if (item.type === 'letter' && !item.revealed) {
+                    item.revealed = true;
+                    item.element.textContent = item.char;
+                    item.element.classList.add('revealed');
+                }
+            });
+
+            finalizarJuego(true);
+        }
+
+        // =========================================================
+        // INICIO / NAVEGACIÓN
+        // =========================================================
+        function iniciarPartida(index) {
+            const f = estado.frases[index];
+            if (!f) return;
+
+            limpiarTemporizadores();
+
+            estado.fraseActual = f;
+            estado.juegoActivo = true;
+            estado.victoriaLograda = false;
+            estado.fase = 'idle';
+
+            setupPanel.style.display = 'none';
+            gameArea.classList.add('active');
+
+            pistaText.textContent = f.pista;
+            crearTablero();
+            mostrarMensaje('📖 Read the hint...');
+            victoryOverlay.classList.remove('active');
+
+            // Imagen solo en modo EASY
+            if (estado.modo === 'facil') {
+                mostrarImagen();
+            } else {
+                ocultarImagen();
+            }
+
+            iniciarCuentaAtras();
+        }
+
+        function volverAlSelector() {
+            if (estado.juegoActivo && !estado.victoriaLograda) {
+                if (!confirm('Are you sure you want to go back? Progress will be lost.')) return;
+            }
+            limpiarTemporizadores();
+            estado.juegoActivo = false;
+            estado.fase = 'idle';
+            gameArea.classList.remove('active');
+            setupPanel.style.display = 'flex';
+            victoryOverlay.classList.remove('active');
+            ocultarImagen();
+
+            renderizarSelector();
+        }
+
+        function saltarLectura() {
+            if (estado.fase !== 'reading') return;
+            if (estado.temporizador) {
+                clearInterval(estado.temporizador);
+                estado.temporizador = null;
+            }
+            iniciarRevelado();
+        }
+
+        // =========================================================
+        // EVENT LISTENERS
+        // =========================================================
+        revealBtn.addEventListener('click', revelarTodo);
+        skipBtn.addEventListener('click', saltarLectura);
+        newGameBtn.addEventListener('click', volverAlSelector);
+        backBtn.addEventListener('click', volverAlSelector);
+        playAgainBtn.addEventListener('click', () => {
+            victoryOverlay.classList.remove('active');
+            volverAlSelector();
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && estado.juegoActivo) {
+                volverAlSelector();
+            }
+            if (event.key === ' ' && estado.fase === 'reading') {
+                event.preventDefault();
+                saltarLectura();
+            }
+            if ((event.key === 'r' || event.key === 'R') && estado.juegoActivo && !estado.victoriaLograda) {
+                revelarTodo();
+            }
+        });
+
+        // =========================================================
+        // INICIALIZACIÓN
+        // =========================================================
+        (async function init() {
+            // Cargar modo guardado
+            let modoInicial = 'facil';
+            try {
+                modoInicial = localStorage.getItem('mystery_modo') || 'facil';
+            } catch (e) {}
+            seleccionarModo(modoInicial);
+
+            // Cargar frases desde TXT
+            estado.frases = await cargarFrases();
+            renderizarSelector();
+
+            console.log('🔤 MYSTERY WORD - Kampa Games');
+            console.log('📝 ' + estado.frases.length + ' words loaded');
+            console.log('⏱️ Read: ' + READ_TIME + 's | Between letters: ' + (TIME_BETWEEN_LETTERS / 1000) + 's');
+            console.log('🎮 Mode: ' + modoInicial.toUpperCase());
+        })();
+    </script>
+</body>
+</html>
