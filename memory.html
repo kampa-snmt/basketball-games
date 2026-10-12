@@ -2,35 +2,890 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About me · Kampa</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Memory · Kampa Games</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Graduate&display=swap" rel="stylesheet">
+
+    <style>
+        /* =============================================
+           ESTILOS ESPECÍFICOS DEL JUEGO MEMORY
+           ============================================= */
+        .memory-wrapper {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(6px);
+            border-radius: 22px;
+            padding: 16px 20px 18px 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .memory-header {
+            text-align: center;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.06);
+        }
+
+        .memory-header h1 {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.5rem;
+            color: #FFD700;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.12);
+            letter-spacing: 2px;
+        }
+
+        .memory-header .subtitle {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+        }
+
+        /* ---- CONTROLES ---- */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 5px 14px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-gold { background: #FFD700; color: #1a2a6c; }
+        .btn-gold:hover:not(:disabled) { background: #FFE44D; }
+
+        .btn-outline {
+            background: transparent;
+            color: #FFD700;
+            border: 1.5px solid rgba(255, 215, 0, 0.35);
+        }
+        .btn-outline:hover:not(:disabled) {
+            background: rgba(255, 215, 0, 0.06);
+            border-color: #FFD700;
+        }
+
+        .btn-danger {
+            background: rgba(220, 53, 69, 0.8);
+            color: white;
+        }
+        .btn-danger:hover:not(:disabled) { background: #dc3545; }
+
+        /* ---- STATUS ---- */
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 5px 14px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.8rem;
+        }
+
+        .status-item strong { color: #FFD700; }
+
+        /* ---- MENSAJE ---- */
+        .message-box {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 5px 14px;
+            text-align: center;
+            min-height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-left: 3px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .message-box .msg {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85rem;
+        }
+
+        .msg.correct { color: #4caf50; }
+        .msg.wrong { color: #ff6b6b; }
+        .msg.victory { color: #FFD700; font-size: 1rem; }
+
+        /* ---- TABLERO ---- */
+        .board {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            min-height: 0;
+            padding: 4px 0;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            width: 100%;
+            max-width: 650px;
+            margin: 0 auto;
+            aspect-ratio: 1 / 1;
+        }
+
+        /* ---- CARTA ---- */
+        .card {
+            background: transparent;
+            border-radius: 14px;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            aspect-ratio: 1 / 1;
+        }
+
+        .card:hover:not(.flipped):not(.matched) {
+            transform: scale(1.03);
+            box-shadow: 0 6px 30px rgba(255, 215, 0, 0.15);
+        }
+
+        .card.disabled { pointer-events: none; }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            overflow: hidden;
+        }
+
+        /* Reverso */
+        .card-back {
+            background: linear-gradient(145deg, #FFD700, #e6b800);
+            transform: rotateY(0deg);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-back img {
+            width: 65%;
+            height: 65%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+        }
+
+        .card-back .back-fallback {
+            font-size: 2.5rem;
+            color: #1a2a6c;
+            font-weight: bold;
+        }
+
+        /* Anverso */
+        .card-front {
+            background: linear-gradient(145deg, #ffffff, #f5f5f8);
+            transform: rotateY(180deg);
+            border: 2px solid rgba(26, 42, 108, 0.2);
+            padding: 6px;
+        }
+
+        .card-front .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            gap: 4px;
+        }
+
+        .card-front .card-content img {
+            width: auto;
+            height: 90%;
+            max-width: 95%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .card-front .card-content .word {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: clamp(0.6rem, 2vh, 1.1rem);
+            font-weight: bold;
+            color: #1a2a6c;
+            text-align: center;
+            padding: 2px 8px;
+            background: rgba(255, 215, 0, 0.12);
+            border-radius: 6px;
+            width: 92%;
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-height: 25%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-front .icon-fallback {
+            font-size: 3rem;
+        }
+
+        /* Estados */
+        .card.flipped .card-back { transform: rotateY(180deg); }
+        .card.flipped .card-front { transform: rotateY(0deg); }
+
+        .card.matched {
+            pointer-events: none;
+            animation: matchPulse 0.4s ease;
+        }
+
+        .card.matched .card-front {
+            border-color: rgba(76, 175, 80, 0.5);
+            box-shadow: 0 0 25px rgba(76, 175, 80, 0.2);
+        }
+
+        @keyframes matchPulse {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.06); }
+            60% { transform: scale(0.96); }
+            100% { transform: scale(1); }
+        }
+
+        .card.study-mode .card-back { transform: rotateY(180deg); }
+        .card.study-mode .card-front { transform: rotateY(0deg); }
+
+        .card.hint .card-back { transform: rotateY(180deg); }
+        .card.hint .card-front { transform: rotateY(0deg); }
+
+        .card.hint {
+            animation: hintPulse 0.7s ease 2;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); box-shadow: 0 0 35px rgba(255, 215, 0, 0.3); }
+        }
+
+        /* ---- OVERLAY VICTORIA ---- */
+        .victory-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .victory-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .victory-content {
+            background: linear-gradient(145deg, #0f1f4a, #080e20);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            padding: 30px 35px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.08);
+            animation: victoryIn 0.5s ease;
+        }
+
+        @keyframes victoryIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .victory-content .trophy {
+            font-size: 3.5rem;
+            margin-bottom: 6px;
+        }
+
+        .victory-content h2 {
+            color: #FFD700;
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .victory-content .sub {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            margin-bottom: 14px;
+        }
+
+        .victory-content .words-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            text-align: left;
+            margin: 10px 0 16px 0;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .victory-content .words-list .word-item {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8rem;
+            padding: 3px 6px;
+            border-left: 2px solid rgba(255, 215, 0, 0.4);
+        }
+
+        .victory-content .words-list .word-item strong { color: #FFD700; }
+
+        .victory-content .stats {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.75rem;
+            margin-bottom: 14px;
+        }
+
+        .victory-content .btn {
+            font-size: 0.95rem;
+            padding: 10px 30px;
+        }
+
+        /* ---- RESPONSIVE ---- */
+        @media (max-width: 850px) {
+            .memory-wrapper { padding: 12px 14px 14px 14px; }
+            .memory-header h1 { font-size: 1.2rem; }
+            .cards-grid { gap: 10px; max-width: 480px; }
+            .card-front .card-content .word { font-size: clamp(0.5rem, 1.8vh, 0.85rem); }
+            .btn { padding: 4px 10px; font-size: 0.6rem; }
+        }
+
+        @media (max-width: 550px) {
+            .memory-wrapper { padding: 8px 8px 10px 8px; border-radius: 14px; }
+            .memory-header h1 { font-size: 1rem; }
+            .cards-grid { gap: 6px; max-width: 340px; }
+            .card { border-radius: 10px; }
+            .card-face { border-radius: 10px; }
+            .card-front .card-content .word { font-size: clamp(0.45rem, 1.5vh, 0.7rem); padding: 1px 4px; }
+            .status-item { font-size: 0.65rem; }
+            .btn { padding: 3px 8px; font-size: 0.5rem; }
+        }
+
+        @media (max-width: 400px) {
+            .cards-grid { gap: 4px; max-width: 280px; }
+            .memory-header h1 { font-size: 0.85rem; }
+        }
+
+        @media (min-height: 900px) {
+            .memory-wrapper { padding: 20px 30px 24px 30px; }
+            .cards-grid { gap: 16px; max-width: 720px; }
+            .memory-header h1 { font-size: 2rem; }
+            .btn { padding: 8px 20px; font-size: 0.85rem; }
+        }
+    </style>
 </head>
 <body>
 
+    <!-- HEADER (inyectado) -->
     <div id="header-container"></div>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="main-content">
-        <div class="home-wrapper">
-            <div class="welcome-section">
-                <h1>👤 About me</h1>
-                <p class="welcome-text">
-                    Coming soon. Here I'll share my professional background, my career in basketball
-                    and education, and my journey in China.
-                </p>
-                <p class="welcome-text-cn">
-                    即将推出。这里将分享我的职业背景、篮球与教育经历，以及我在中国的故事。
-                </p>
+        <div class="memory-wrapper">
+
+            <!-- TÍTULO -->
+            <div class="memory-header">
+                <h1>🧠 MEMORY</h1>
+                <div class="subtitle">Match the image with the correct word</div>
             </div>
+
+            <!-- CONTROLES -->
+            <div class="controls">
+                <button class="btn btn-gold" id="studyBtn">📚 Study</button>
+                <button class="btn btn-outline" id="hintBtn">💡 Hint</button>
+                <button class="btn btn-outline" id="newGameBtn">🔄 New</button>
+                <button class="btn btn-danger" id="backBtn">⬅️ Back</button>
+            </div>
+
+            <!-- STATUS -->
+            <div class="status-bar">
+                <div class="status-item">🎯 Pairs: <strong id="pairsFound">0</strong> / <span id="totalPairs">16</span></div>
+                <div class="status-item">⏱️ <strong id="timerDisplay">00:00</strong></div>
+            </div>
+
+            <!-- MENSAJE -->
+            <div class="message-box">
+                <div class="msg" id="message">🔍 Find the pairs! Click a card to start.</div>
+            </div>
+
+            <!-- TABLERO -->
+            <div class="board">
+                <div class="cards-grid" id="cardsGrid"></div>
+            </div>
+
         </div>
     </main>
 
+    <!-- FOOTER (inyectado) -->
     <div id="footer-container"></div>
 
+    <!-- OVERLAY VICTORIA -->
+    <div class="victory-overlay" id="victoryOverlay">
+        <div class="victory-content">
+            <div class="trophy">🏆</div>
+            <h2>Congratulations!</h2>
+            <div class="sub">You found all the pairs! 🎉</div>
+            <div class="words-list" id="wordsList"></div>
+            <div class="stats" id="victoryStats">⏱️ 00:00 · 🎯 0/0</div>
+            <button class="btn btn-gold" id="playAgainBtn">🔄 Play Again</button>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="js/config.js"></script>
     <script src="js/header.js"></script>
     <script src="js/footer.js"></script>
 
+    <script>
+        // =========================================================
+        // ESTADO DEL JUEGO
+        // =========================================================
+        let gameState = {
+            cards: [],
+            pairsFound: 0,
+            totalPairs: 0,
+            isLocked: false,
+            firstCard: null,
+            secondCard: null,
+            timerInterval: null,
+            seconds: 0,
+            isGameActive: false,
+            isStudyMode: false,
+            seleccion: [],
+        };
+
+        const STUDY_TIME = 1000;
+        const HINT_TIME = 2000;
+        let hintsLeft = 2;
+
+        // =========================================================
+        // DOM
+        // =========================================================
+        const cardsGrid = document.getElementById('cardsGrid');
+        const messageEl = document.getElementById('message');
+        const pairsFoundEl = document.getElementById('pairsFound');
+        const totalPairsEl = document.getElementById('totalPairs');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const studyBtn = document.getElementById('studyBtn');
+        const hintBtn = document.getElementById('hintBtn');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const backBtn = document.getElementById('backBtn');
+        const victoryOverlay = document.getElementById('victoryOverlay');
+        const wordsList = document.getElementById('wordsList');
+        const victoryStats = document.getElementById('victoryStats');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+
+        // =========================================================
+        // INICIO DEL JUEGO
+        // =========================================================
+        function initGame() {
+            resetGameState();
+
+            // Elegir imágenes aleatorias
+            gameState.seleccion = elegirImagenesAleatorias();
+            gameState.totalPairs = gameState.seleccion.length;
+            totalPairsEl.textContent = gameState.totalPairs;
+
+            // Crear deck (imagen + palabra por cada término)
+            const deck = [];
+            gameState.seleccion.forEach((item, idx) => {
+                // Carta imagen
+                deck.push({
+                    id: 'img-' + idx,
+                    pairId: idx,
+                    type: 'image',
+                    content: item.rutaCompleta,
+                    palabra: item.palabra,
+                    flipped: false,
+                    matched: false
+                });
+                // Carta palabra
+                deck.push({
+                    id: 'word-' + idx,
+                    pairId: idx,
+                    type: 'word',
+                    content: item.palabra,
+                    flipped: false,
+                    matched: false
+                });
+            });
+
+            // Barajar
+            shuffleArray(deck);
+            gameState.cards = deck;
+
+            renderBoard(deck);
+            gameState.isGameActive = true;
+            hintsLeft = 2;
+            updateStatus();
+            setMessage('🔍 Find the pairs! Click a card to start.');
+
+            // Timer
+            gameState.timerInterval = setInterval(() => {
+                gameState.seconds++;
+                updateTimer();
+            }, 1000);
+        }
+
+        function resetGameState() {
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+            gameState.pairsFound = 0;
+            gameState.totalPairs = 0;
+            gameState.isLocked = false;
+            gameState.firstCard = null;
+            gameState.secondCard = null;
+            gameState.seconds = 0;
+            gameState.isGameActive = false;
+            gameState.isStudyMode = false;
+            hintsLeft = 2;
+            victoryOverlay.classList.remove('active');
+            updateTimer();
+        }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // =========================================================
+        // RENDERIZADO
+        // =========================================================
+        function renderBoard(cards) {
+            cardsGrid.innerHTML = '';
+
+            cards.forEach((card, index) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card';
+                cardDiv.dataset.index = index;
+
+                // Reverso (cba.png como dorso)
+                const backDiv = document.createElement('div');
+                backDiv.className = 'card-face card-back';
+                const backImg = document.createElement('img');
+                backImg.src = RUTA_LOGOS + 'cba.png';
+                backImg.alt = 'Card back';
+                backImg.onerror = function() {
+                    this.style.display = 'none';
+                    const fallback = document.createElement('div');
+                    fallback.className = 'back-fallback';
+                    fallback.textContent = '🏀';
+                    backDiv.appendChild(fallback);
+                };
+                backDiv.appendChild(backImg);
+
+                // Anverso
+                const frontDiv = document.createElement('div');
+                frontDiv.className = 'card-face card-front';
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'card-content';
+
+                if (card.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = card.content;
+                    img.alt = card.palabra;
+                    img.loading = 'lazy';
+                    img.onerror = function() {
+                        this.style.display = 'none';
+                        const fallback = document.createElement('div');
+                        fallback.className = 'icon-fallback';
+                        fallback.textContent = '🖼️';
+                        this.parentNode.insertBefore(fallback, this);
+                    };
+                    contentDiv.appendChild(img);
+                } else {
+                    const wordSpan = document.createElement('span');
+                    wordSpan.className = 'word';
+                    wordSpan.textContent = card.content;
+                    contentDiv.appendChild(wordSpan);
+                }
+
+                frontDiv.appendChild(contentDiv);
+                cardDiv.appendChild(backDiv);
+                cardDiv.appendChild(frontDiv);
+
+                cardDiv.addEventListener('click', () => onCardClick(index));
+                cardsGrid.appendChild(cardDiv);
+            });
+        }
+
+        function updateCardVisual(index) {
+            const card = gameState.cards[index];
+            const element = cardsGrid.children[index];
+            if (!element) return;
+
+            element.className = 'card';
+            if (card.flipped) element.classList.add('flipped');
+            if (card.matched) element.classList.add('matched', 'disabled');
+            if (!gameState.isGameActive && !card.matched) element.classList.add('disabled');
+        }
+
+        // =========================================================
+        // ACTUALIZACIONES UI
+        // =========================================================
+        function updateStatus() {
+            pairsFoundEl.textContent = gameState.pairsFound;
+            hintBtn.disabled = hintsLeft <= 0 || !gameState.isGameActive || gameState.isStudyMode;
+            hintBtn.textContent = '💡 Hint (' + hintsLeft + ')';
+        }
+
+        function updateTimer() {
+            const mins = String(Math.floor(gameState.seconds / 60)).padStart(2, '0');
+            const secs = String(gameState.seconds % 60).padStart(2, '0');
+            timerDisplay.textContent = mins + ':' + secs;
+        }
+
+        function setMessage(text, type) {
+            messageEl.textContent = text;
+            messageEl.className = 'msg';
+            if (type) messageEl.classList.add(type);
+        }
+
+        // =========================================================
+        // CLICK EN CARTA
+        // =========================================================
+        function onCardClick(index) {
+            if (!gameState.isGameActive) return;
+            if (gameState.isLocked) return;
+            if (gameState.isStudyMode) return;
+
+            const card = gameState.cards[index];
+            if (card.matched) return;
+            if (card.flipped) return;
+
+            if (gameState.firstCard === null) {
+                card.flipped = true;
+                updateCardVisual(index);
+                gameState.firstCard = { index, card };
+                return;
+            }
+
+            if (gameState.firstCard.index === index) return;
+            if (gameState.secondCard !== null) return;
+
+            card.flipped = true;
+            updateCardVisual(index);
+            gameState.secondCard = { index, card };
+            gameState.isLocked = true;
+
+            checkMatch();
+        }
+
+        function checkMatch() {
+            const first = gameState.firstCard;
+            const second = gameState.secondCard;
+            const isMatch = first.card.pairId === second.card.pairId;
+
+            if (isMatch) {
+                first.card.matched = true;
+                second.card.matched = true;
+                gameState.pairsFound++;
+                updateCardVisual(first.index);
+                updateCardVisual(second.index);
+                updateStatus();
+                setMessage('✅ Correct!', 'correct');
+                resetSelection();
+
+                if (gameState.pairsFound === gameState.totalPairs) {
+                    victory();
+                }
+            } else {
+                setMessage('❌ Not yet. Try again!', 'wrong');
+                setTimeout(() => {
+                    if (!gameState.isGameActive) return;
+                    if (!first.card.matched) {
+                        first.card.flipped = false;
+                        updateCardVisual(first.index);
+                    }
+                    if (!second.card.matched) {
+                        second.card.flipped = false;
+                        updateCardVisual(second.index);
+                    }
+                    resetSelection();
+                    setMessage('🔍 Keep looking for pairs!');
+                }, 900);
+            }
+        }
+
+        function resetSelection() {
+            gameState.firstCard = null;
+            gameState.secondCard = null;
+            gameState.isLocked = false;
+        }
+
+        // =========================================================
+        // MODO ESTUDIO
+        // =========================================================
+        function studyMode() {
+            if (gameState.isStudyMode) return;
+            if (!gameState.isGameActive) return;
+            if (gameState.pairsFound === gameState.totalPairs) return;
+
+            gameState.isStudyMode = true;
+            gameState.isLocked = true;
+            setMessage('📚 Study Mode: All cards revealed for 1 second!');
+
+            gameState.cards.forEach((card, index) => {
+                if (!card.matched) {
+                    card.flipped = true;
+                    updateCardVisual(index);
+                }
+            });
+
+            setTimeout(() => {
+                gameState.cards.forEach((card, index) => {
+                    if (!card.matched) {
+                        card.flipped = false;
+                        updateCardVisual(index);
+                    }
+                });
+                gameState.isStudyMode = false;
+                gameState.isLocked = false;
+                setMessage('🔍 Study mode finished! Now find the pairs.');
+            }, STUDY_TIME);
+        }
+
+        // =========================================================
+        // PISTA
+        // =========================================================
+        function useHint() {
+            if (hintsLeft <= 0) return;
+            if (!gameState.isGameActive) return;
+            if (gameState.isStudyMode) return;
+            if (gameState.isLocked) return;
+            if (gameState.pairsFound === gameState.totalPairs) return;
+
+            const available = gameState.cards
+                .map((card, index) => ({ card, index }))
+                .filter(item => !item.card.matched && !item.card.flipped);
+
+            if (available.length < 2) return;
+
+            const random = available[Math.floor(Math.random() * available.length)];
+            const cardIndex = random.index;
+            const card = random.card;
+
+            card.flipped = true;
+            updateCardVisual(cardIndex);
+            hintsLeft--;
+            updateStatus();
+            setMessage('💡 Hint: showing a card for 2 seconds');
+            gameState.isLocked = true;
+
+            setTimeout(() => {
+                if (gameState.isGameActive && !card.matched) {
+                    card.flipped = false;
+                    updateCardVisual(cardIndex);
+                }
+                gameState.isLocked = false;
+                setMessage('🔍 Continue playing!');
+            }, HINT_TIME);
+        }
+
+        // =========================================================
+        // VICTORIA
+        // =========================================================
+        function victory() {
+            gameState.isGameActive = false;
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+
+            setMessage('🎉 VICTORY! You found all the pairs! 🎉', 'victory');
+
+            wordsList.innerHTML = gameState.seleccion.map(item =>
+                '<div class="word-item"><strong>' + item.palabra + '</strong></div>'
+            ).join('');
+
+            const mins = String(Math.floor(gameState.seconds / 60)).padStart(2, '0');
+            const secs = String(gameState.seconds % 60).padStart(2, '0');
+            victoryStats.textContent = '⏱️ ' + mins + ':' + secs + ' · 🎯 ' + gameState.pairsFound + '/' + gameState.totalPairs;
+
+            setTimeout(() => {
+                victoryOverlay.classList.add('active');
+            }, 400);
+        }
+
+        // =========================================================
+        // EVENT LISTENERS
+        // =========================================================
+        studyBtn.addEventListener('click', studyMode);
+        hintBtn.addEventListener('click', useHint);
+        newGameBtn.addEventListener('click', () => {
+            victoryOverlay.classList.remove('active');
+            initGame();
+        });
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'games.html';
+        });
+        playAgainBtn.addEventListener('click', () => {
+            victoryOverlay.classList.remove('active');
+            initGame();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 's' || e.key === 'S') { e.preventDefault(); studyMode(); }
+            if (e.key === 'h' || e.key === 'H') { e.preventDefault(); useHint(); }
+            if (e.key === 'r' || e.key === 'R') { e.preventDefault(); victoryOverlay.classList.remove('active'); initGame(); }
+            if (e.key === 'Escape') { e.preventDefault(); window.location.href = 'games.html'; }
+        });
+
+        // =========================================================
+        // INICIO
+        // =========================================================
+        initGame();
+
+        console.log('🧠 MEMORY - ' + gameState.totalPairs + ' pares');
+    </script>
 </body>
 </html>
