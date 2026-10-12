@@ -46,7 +46,88 @@
             letter-spacing: 1px;
         }
 
-        /* ---- CONTROLES ---- */
+        /* ---- SELECTOR (pantalla inicial) ---- */
+        .selector {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px 10px;
+            align-items: center;
+        }
+
+        .selector-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .selector-label {
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 0.85rem;
+            color: #FFD700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+        }
+
+        .btn-option {
+            padding: 8px 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-option:hover {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .btn-option.active {
+            background: #FFD700;
+            color: #1a2a6c;
+            box-shadow: 0 2px 12px rgba(255, 215, 0, 0.25);
+        }
+
+        .btn-start {
+            padding: 14px 50px;
+            font-family: 'Graduate', 'Segoe UI', sans-serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #FFD700;
+            color: #1a2a6c;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .btn-start:hover {
+            background: #FFE44D;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+        }
+
+        /* ---- CONTROLES DEL JUEGO ---- */
         .controls {
             display: flex;
             justify-content: center;
@@ -149,12 +230,23 @@
 
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
             width: 100%;
             max-width: 650px;
             margin: 0 auto;
-            aspect-ratio: 1 / 1;
+            justify-content: center;
+        }
+
+        /* Grid para 4 parejas (8 cartas) → 4 columnas */
+        .cards-grid.pairs-4 {
+            grid-template-columns: repeat(4, 1fr);
+            max-width: 550px;
+        }
+
+        /* Grid para 8 parejas (16 cartas) → 4 columnas */
+        .cards-grid.pairs-8 {
+            grid-template-columns: repeat(4, 1fr);
+            max-width: 650px;
         }
 
         /* ---- CARTA ---- */
@@ -167,6 +259,7 @@
             transition: transform 0.2s ease;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             aspect-ratio: 1 / 1;
+            width: 100%;
         }
 
         .card:hover:not(.flipped):not(.matched) {
@@ -239,7 +332,7 @@
 
         .card-front .card-content .word {
             font-family: 'Graduate', 'Segoe UI', sans-serif;
-            font-size: clamp(0.6rem, 2vh, 1.1rem);
+            font-size: clamp(0.55rem, 2vh, 1rem);
             font-weight: bold;
             color: #1a2a6c;
             text-align: center;
@@ -251,7 +344,6 @@
             line-height: 1.2;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            max-height: 25%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -389,33 +481,48 @@
         @media (max-width: 850px) {
             .memory-wrapper { padding: 12px 14px 14px 14px; }
             .memory-header h1 { font-size: 1.2rem; }
-            .cards-grid { gap: 10px; max-width: 480px; }
+            .cards-grid { gap: 10px; }
+            .cards-grid.pairs-4 { max-width: 420px; }
+            .cards-grid.pairs-8 { max-width: 480px; }
             .card-front .card-content .word { font-size: clamp(0.5rem, 1.8vh, 0.85rem); }
             .btn { padding: 4px 10px; font-size: 0.6rem; }
+            .btn-start { padding: 12px 35px; font-size: 0.95rem; }
         }
 
         @media (max-width: 550px) {
             .memory-wrapper { padding: 8px 8px 10px 8px; border-radius: 14px; }
             .memory-header h1 { font-size: 1rem; }
-            .cards-grid { gap: 6px; max-width: 340px; }
+            .cards-grid { gap: 6px; }
+            .cards-grid.pairs-4 { max-width: 320px; }
+            .cards-grid.pairs-8 { max-width: 340px; }
             .card { border-radius: 10px; }
             .card-face { border-radius: 10px; }
             .card-front .card-content .word { font-size: clamp(0.45rem, 1.5vh, 0.7rem); padding: 1px 4px; }
             .status-item { font-size: 0.65rem; }
             .btn { padding: 3px 8px; font-size: 0.5rem; }
+            .btn-start { padding: 10px 25px; font-size: 0.85rem; }
+            .btn-option { padding: 6px 14px; font-size: 0.75rem; }
         }
 
         @media (max-width: 400px) {
-            .cards-grid { gap: 4px; max-width: 280px; }
+            .cards-grid { gap: 4px; }
+            .cards-grid.pairs-4 { max-width: 270px; }
+            .cards-grid.pairs-8 { max-width: 280px; }
             .memory-header h1 { font-size: 0.85rem; }
         }
 
         @media (min-height: 900px) {
             .memory-wrapper { padding: 20px 30px 24px 30px; }
-            .cards-grid { gap: 16px; max-width: 720px; }
+            .cards-grid { gap: 16px; }
+            .cards-grid.pairs-4 { max-width: 650px; }
+            .cards-grid.pairs-8 { max-width: 720px; }
             .memory-header h1 { font-size: 2rem; }
             .btn { padding: 8px 20px; font-size: 0.85rem; }
+            .btn-start { padding: 16px 60px; font-size: 1.2rem; }
         }
+
+        /* ---- UTILIDADES ---- */
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
@@ -430,31 +537,67 @@
             <!-- TÍTULO -->
             <div class="memory-header">
                 <h1>🧠 MEMORY</h1>
-                <div class="subtitle">Match the image with the correct word</div>
+                <div class="subtitle">Match the pairs!</div>
             </div>
 
-            <!-- CONTROLES -->
-            <div class="controls">
-                <button class="btn btn-gold" id="studyBtn">📚 Study</button>
-                <button class="btn btn-outline" id="hintBtn">💡 Hint</button>
-                <button class="btn btn-outline" id="newGameBtn">🔄 New</button>
-                <button class="btn btn-danger" id="backBtn">⬅️ Back</button>
+            <!-- ============================================ -->
+            <!-- SELECTOR (pantalla inicial) -->
+            <!-- ============================================ -->
+            <div class="selector" id="selectorPanel">
+
+                <!-- Cantidad de parejas -->
+                <div class="selector-section">
+                    <div class="selector-label">Number of pairs</div>
+                    <div class="btn-group" id="pairsGroup">
+                        <button class="btn-option active" data-pairs="4">4 pairs</button>
+                        <button class="btn-option" data-pairs="8">8 pairs</button>
+                    </div>
+                </div>
+
+                <!-- Modo de juego -->
+                <div class="selector-section">
+                    <div class="selector-label">Game mode</div>
+                    <div class="btn-group" id="modeGroup">
+                        <button class="btn-option active" data-mode="image-image">🖼️ Image ↔ Image</button>
+                        <button class="btn-option" data-mode="image-word">🖼️ Image ↔ Word</button>
+                    </div>
+                </div>
+
+                <!-- Botón START -->
+                <button class="btn-start" id="startBtn">🎮 START GAME</button>
+
             </div>
 
-            <!-- STATUS -->
-            <div class="status-bar">
-                <div class="status-item">🎯 Pairs: <strong id="pairsFound">0</strong> / <span id="totalPairs">16</span></div>
-                <div class="status-item">⏱️ <strong id="timerDisplay">00:00</strong></div>
-            </div>
+            <!-- ============================================ -->
+            <!-- ZONA DE JUEGO -->
+            <!-- ============================================ -->
+            <div id="gameArea" class="hidden">
 
-            <!-- MENSAJE -->
-            <div class="message-box">
-                <div class="msg" id="message">🔍 Find the pairs! Click a card to start.</div>
-            </div>
+                <!-- CONTROLES -->
+                <div class="controls">
+                    <button class="btn btn-gold" id="studyBtn">📚 Study</button>
+                    <button class="btn btn-outline" id="hintBtn">💡 Hint</button>
+                    <button class="btn btn-outline" id="newGameBtn">🔄 New</button>
+                    <button class="btn btn-danger" id="backBtn">⬅️ Back</button>
+                </div>
 
-            <!-- TABLERO -->
-            <div class="board">
-                <div class="cards-grid" id="cardsGrid"></div>
+                <!-- STATUS -->
+                <div class="status-bar">
+                    <div class="status-item">🎯 Pairs: <strong id="pairsFound">0</strong> / <span id="totalPairs">4</span></div>
+                    <div class="status-item">⏱️ <strong id="timerDisplay">00:00</strong></div>
+                    <div class="status-item">🎮 <strong id="modeDisplay">Image ↔ Word</strong></div>
+                </div>
+
+                <!-- MENSAJE -->
+                <div class="message-box">
+                    <div class="msg" id="message">🔍 Find the pairs! Click a card to start.</div>
+                </div>
+
+                <!-- TABLERO -->
+                <div class="board">
+                    <div class="cards-grid" id="cardsGrid"></div>
+                </div>
+
             </div>
 
         </div>
@@ -482,6 +625,13 @@
 
     <script>
         // =========================================================
+        // CONFIGURACIÓN
+        // =========================================================
+        const STUDY_TIME = 1000;
+        const HINT_TIME = 2000;
+        const MAX_HINTS = 2;
+
+        // =========================================================
         // ESTADO DEL JUEGO
         // =========================================================
         let gameState = {
@@ -496,20 +646,27 @@
             isGameActive: false,
             isStudyMode: false,
             seleccion: [],
+            hintsLeft: MAX_HINTS,
+            config: {
+                pairs: 4,
+                mode: 'image-image' // 'image-image' o 'image-word'
+            }
         };
-
-        const STUDY_TIME = 1000;
-        const HINT_TIME = 2000;
-        let hintsLeft = 2;
 
         // =========================================================
         // DOM
         // =========================================================
+        const selectorPanel = document.getElementById('selectorPanel');
+        const gameArea = document.getElementById('gameArea');
+        const pairsGroup = document.getElementById('pairsGroup');
+        const modeGroup = document.getElementById('modeGroup');
+        const startBtn = document.getElementById('startBtn');
         const cardsGrid = document.getElementById('cardsGrid');
         const messageEl = document.getElementById('message');
         const pairsFoundEl = document.getElementById('pairsFound');
         const totalPairsEl = document.getElementById('totalPairs');
         const timerDisplay = document.getElementById('timerDisplay');
+        const modeDisplay = document.getElementById('modeDisplay');
         const studyBtn = document.getElementById('studyBtn');
         const hintBtn = document.getElementById('hintBtn');
         const newGameBtn = document.getElementById('newGameBtn');
@@ -520,38 +677,104 @@
         const playAgainBtn = document.getElementById('playAgainBtn');
 
         // =========================================================
+        // SELECTOR
+        // =========================================================
+        pairsGroup.querySelectorAll('.btn-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                pairsGroup.querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gameState.config.pairs = parseInt(btn.dataset.pairs);
+            });
+        });
+
+        modeGroup.querySelectorAll('.btn-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                modeGroup.querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                gameState.config.mode = btn.dataset.mode;
+            });
+        });
+
+        startBtn.addEventListener('click', () => {
+            startGame();
+        });
+
+        // =========================================================
         // INICIO DEL JUEGO
         // =========================================================
-        function initGame() {
+        function startGame() {
+            // Ocultar selector, mostrar juego
+            selectorPanel.classList.add('hidden');
+            gameArea.classList.remove('hidden');
+
+            // Reset estado
             resetGameState();
 
-            // Elegir imágenes aleatorias
-            gameState.seleccion = elegirImagenesAleatorias();
+            // Elegir N palabras aleatorias de la lista
+            const todasPalabras = [...PALABRAS_JUEGO];
+            shuffleArray(todasPalabras);
+            const seleccionadas = todasPalabras.slice(0, gameState.config.pairs);
+
+            // Elegir una imagen aleatoria por palabra
+            gameState.seleccion = seleccionadas.map(item => {
+                const randomIdx = Math.floor(Math.random() * item.imagenes.length);
+                return {
+                    palabra: item.palabra,
+                    imagen: item.imagenes[randomIdx],
+                    rutaCompleta: RUTA_TERMS + item.imagenes[randomIdx]
+                };
+            });
+
             gameState.totalPairs = gameState.seleccion.length;
             totalPairsEl.textContent = gameState.totalPairs;
+            modeDisplay.textContent = gameState.config.mode === 'image-image' ? 'Image ↔ Image' : 'Image ↔ Word';
 
-            // Crear deck (imagen + palabra por cada término)
+            // Aplicar clase al grid según cantidad de parejas
+            cardsGrid.className = 'cards-grid pairs-' + gameState.config.pairs;
+
+            // Crear deck
             const deck = [];
             gameState.seleccion.forEach((item, idx) => {
-                // Carta imagen
-                deck.push({
-                    id: 'img-' + idx,
-                    pairId: idx,
-                    type: 'image',
-                    content: item.rutaCompleta,
-                    palabra: item.palabra,
-                    flipped: false,
-                    matched: false
-                });
-                // Carta palabra
-                deck.push({
-                    id: 'word-' + idx,
-                    pairId: idx,
-                    type: 'word',
-                    content: item.palabra,
-                    flipped: false,
-                    matched: false
-                });
+                if (gameState.config.mode === 'image-image') {
+                    // 2 cartas con la MISMA imagen
+                    deck.push({
+                        id: 'imgA-' + idx,
+                        pairId: idx,
+                        type: 'image',
+                        content: item.rutaCompleta,
+                        palabra: item.palabra,
+                        flipped: false,
+                        matched: false
+                    });
+                    deck.push({
+                        id: 'imgB-' + idx,
+                        pairId: idx,
+                        type: 'image',
+                        content: item.rutaCompleta,
+                        palabra: item.palabra,
+                        flipped: false,
+                        matched: false
+                    });
+                } else {
+                    // Imagen + palabra
+                    deck.push({
+                        id: 'img-' + idx,
+                        pairId: idx,
+                        type: 'image',
+                        content: item.rutaCompleta,
+                        palabra: item.palabra,
+                        flipped: false,
+                        matched: false
+                    });
+                    deck.push({
+                        id: 'word-' + idx,
+                        pairId: idx,
+                        type: 'word',
+                        content: item.palabra,
+                        flipped: false,
+                        matched: false
+                    });
+                }
             });
 
             // Barajar
@@ -560,7 +783,7 @@
 
             renderBoard(deck);
             gameState.isGameActive = true;
-            hintsLeft = 2;
+            gameState.hintsLeft = MAX_HINTS;
             updateStatus();
             setMessage('🔍 Find the pairs! Click a card to start.');
 
@@ -584,7 +807,7 @@
             gameState.seconds = 0;
             gameState.isGameActive = false;
             gameState.isStudyMode = false;
-            hintsLeft = 2;
+            gameState.hintsLeft = MAX_HINTS;
             victoryOverlay.classList.remove('active');
             updateTimer();
         }
@@ -674,8 +897,8 @@
         // =========================================================
         function updateStatus() {
             pairsFoundEl.textContent = gameState.pairsFound;
-            hintBtn.disabled = hintsLeft <= 0 || !gameState.isGameActive || gameState.isStudyMode;
-            hintBtn.textContent = '💡 Hint (' + hintsLeft + ')';
+            hintBtn.disabled = gameState.hintsLeft <= 0 || !gameState.isGameActive || gameState.isStudyMode;
+            hintBtn.textContent = '💡 Hint (' + gameState.hintsLeft + ')';
         }
 
         function updateTimer() {
@@ -798,7 +1021,7 @@
         // PISTA
         // =========================================================
         function useHint() {
-            if (hintsLeft <= 0) return;
+            if (gameState.hintsLeft <= 0) return;
             if (!gameState.isGameActive) return;
             if (gameState.isStudyMode) return;
             if (gameState.isLocked) return;
@@ -816,7 +1039,7 @@
 
             card.flipped = true;
             updateCardVisual(cardIndex);
-            hintsLeft--;
+            gameState.hintsLeft--;
             updateStatus();
             setMessage('💡 Hint: showing a card for 2 seconds');
             gameState.isLocked = true;
@@ -857,35 +1080,41 @@
         }
 
         // =========================================================
+        // VOLVER AL SELECTOR
+        // =========================================================
+        function backToSelector() {
+            if (gameState.isGameActive && !gameState.isStudyMode && gameState.pairsFound < gameState.totalPairs) {
+                if (!confirm('Are you sure you want to go back? Progress will be lost.')) return;
+            }
+            resetGameState();
+            gameArea.classList.add('hidden');
+            selectorPanel.classList.remove('hidden');
+            victoryOverlay.classList.remove('active');
+        }
+
+        // =========================================================
         // EVENT LISTENERS
         // =========================================================
         studyBtn.addEventListener('click', studyMode);
         hintBtn.addEventListener('click', useHint);
         newGameBtn.addEventListener('click', () => {
             victoryOverlay.classList.remove('active');
-            initGame();
+            startGame();
         });
-        backBtn.addEventListener('click', () => {
-            window.location.href = 'games.html';
-        });
+        backBtn.addEventListener('click', backToSelector);
         playAgainBtn.addEventListener('click', () => {
             victoryOverlay.classList.remove('active');
-            initGame();
+            backToSelector();
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 's' || e.key === 'S') { e.preventDefault(); studyMode(); }
             if (e.key === 'h' || e.key === 'H') { e.preventDefault(); useHint(); }
-            if (e.key === 'r' || e.key === 'R') { e.preventDefault(); victoryOverlay.classList.remove('active'); initGame(); }
-            if (e.key === 'Escape') { e.preventDefault(); window.location.href = 'games.html'; }
+            if (e.key === 'r' || e.key === 'R') { e.preventDefault(); victoryOverlay.classList.remove('active'); startGame(); }
+            if (e.key === 'Escape') { e.preventDefault(); backToSelector(); }
         });
 
-        // =========================================================
-        // INICIO
-        // =========================================================
-        initGame();
-
-        console.log('🧠 MEMORY - ' + gameState.totalPairs + ' pares');
+        console.log('🧠 MEMORY - ready');
     </script>
 </body>
 </html>
