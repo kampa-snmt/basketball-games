@@ -831,27 +831,8 @@
             return mapa[letra] || letra;
         }
 
-        function contarVocalesUnicas(palabra) {
-            const vocales = 'AEIOU';
-            const vistas = new Set();
-            for (const c of palabra.toUpperCase()) {
-                if (vocales.includes(normalizarLetra(c))) vistas.add(c);
-            }
-            return vistas.size;
-        }
-
-        function contarConsonantesUnicas(palabra) {
-            const vocales = 'AEIOU';
-            const vistas = new Set();
-            for (const c of palabra.toUpperCase()) {
-                const n = normalizarLetra(c);
-                if (/[A-ZÑ]/.test(n) && !vocales.includes(n)) vistas.add(c);
-            }
-            return vistas.size;
-        }
-
         // =========================================================
-        // CARGAR TXT
+        // CARGAR TXT (4 campos: palabra | definición | chino | ejemplo)
         // =========================================================
         async function cargarFrases() {
             try {
@@ -869,7 +850,9 @@
                         if (parts.length < 2) return null;
                         return {
                             frase: parts[0],
-                            pista: parts[1]
+                            pista: parts[1],
+                            chino: parts[2] || '',
+                            ejemplo: parts[3] || ''
                         };
                     })
                     .filter(f => f !== null);
@@ -885,22 +868,22 @@
 
         function getFallbackFrases() {
             return [
-                { frase: 'Ball', pista: 'Round object used in basketball' },
-                { frase: 'Basket', pista: 'Where you throw the ball' },
-                { frase: 'Player', pista: 'Person who plays the game' },
-                { frase: 'Pass', pista: 'Give the ball to another player' },
-                { frase: 'Shoot', pista: 'Throw the ball to the basket' },
-                { frase: 'Dribble/Bounce', pista: 'Bounce the ball while walking' },
-                { frase: 'Jump', pista: 'Go up in the air with your legs' },
-                { frase: 'Court', pista: 'Place where you play basketball' },
-                { frase: 'Coach', pista: 'Person who trains the team' },
-                { frase: 'Backboard', pista: 'Flat board behind the basket' },
-                { frase: 'Rim', pista: 'Metal circle of the basket' },
-                { frase: 'Rebound', pista: 'Get the ball after a missed shot' },
-                { frase: 'Offense', pista: 'Team with the ball attacking' },
-                { frase: 'Defense', pista: 'Team trying to stop the attack' },
-                { frase: 'Score', pista: 'Put the ball in the basket' },
-                { frase: 'Team', pista: 'Group of players playing together' }
+                { frase: 'Ball', pista: 'Round object used in basketball', chino: '球', ejemplo: 'I passed the ball to my teammate.' },
+                { frase: 'Basket', pista: 'Where you throw the ball', chino: '篮筐', ejemplo: 'The player scored in the basket.' },
+                { frase: 'Player', pista: 'Person who plays the game', chino: '球员', ejemplo: 'He is a great basketball player.' },
+                { frase: 'Pass', pista: 'Give the ball to another player', chino: '传球', ejemplo: 'She made a perfect pass to me.' },
+                { frase: 'Shoot', pista: 'Throw the ball to the basket', chino: '投篮', ejemplo: 'He shoots the ball every day.' },
+                { frase: 'Dribble/Bounce', pista: 'Bounce the ball while walking', chino: '运球', ejemplo: 'I practice my dribble at home.' },
+                { frase: 'Jump', pista: 'Go up in the air with your legs', chino: '跳', ejemplo: 'The player jumps very high.' },
+                { frase: 'Court', pista: 'Place where you play basketball', chino: '球场', ejemplo: 'We play on the court every Friday.' },
+                { frase: 'Coach', pista: 'Person who trains the team', chino: '教练', ejemplo: 'The coach teaches us new plays.' },
+                { frase: 'Backboard', pista: 'Flat board behind the basket', chino: '篮板', ejemplo: 'The ball hit the backboard.' },
+                { frase: 'Rim', pista: 'Metal circle of the basket', chino: '篮圈', ejemplo: 'The ball bounced off the rim.' },
+                { frase: 'Rebound', pista: 'Get the ball after a missed shot', chino: '篮板球', ejemplo: 'He got an important rebound.' },
+                { frase: 'Offense', pista: 'Team with the ball attacking', chino: '进攻', ejemplo: 'Our offense is very strong.' },
+                { frase: 'Defense', pista: 'Team trying to stop the attack', chino: '防守', ejemplo: 'Good defense wins games.' },
+                { frase: 'Score', pista: 'Put the ball in the basket', chino: '得分', ejemplo: 'I scored two points!' },
+                { frase: 'Team', pista: 'Group of players playing together', chino: '球队', ejemplo: 'Our team is the best!' }
             ];
         }
 
@@ -908,7 +891,6 @@
         // ENCONTRAR IMAGEN DE LA PALABRA
         // =========================================================
         function encontrarImagenDePalabra(palabra) {
-            // Buscar en PALABRAS_JUEGO de config.js
             if (typeof PALABRAS_JUEGO === 'undefined') return null;
 
             const item = PALABRAS_JUEGO.find(p =>
@@ -927,7 +909,6 @@
         function renderizarSelector() {
             pistasGrid.innerHTML = '';
 
-            // Barajar el orden de las tarjetas
             const indices = estado.frases.map((_, i) => i);
             for (let i = indices.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
@@ -936,9 +917,6 @@
 
             indices.forEach(indexOriginal => {
                 const f = estado.frases[indexOriginal];
-                const vocales = contarVocalesUnicas(f.frase);
-                const consonantes = contarConsonantesUnicas(f.frase);
-
                 const card = document.createElement('div');
                 card.className = 'pista-card';
                 card.innerHTML =
@@ -956,7 +934,7 @@
         // =========================================================
         function seleccionarModo(modo) {
             if (estado.juegoActivo && !estado.victoriaLograda) {
-                return; // No cambiar modo durante partida activa
+                return;
             }
 
             estado.modo = modo;
@@ -1083,7 +1061,6 @@
             if (ruta) {
                 mysteryImage.src = ruta;
                 mysteryImage.onerror = function() {
-                    // Intentar JPG
                     this.src = ruta.replace('.png', '.jpg');
                     this.onerror = function() {
                         imageContainer.classList.add('hidden');
@@ -1268,7 +1245,6 @@
                 estado.victoriaLograda = true;
                 estado.juegoActivo = false;
 
-                // En modo HARD, mostrar la imagen al acabar
                 if (estado.modo === 'dificil') {
                     mostrarImagen();
                 }
@@ -1324,7 +1300,6 @@
             mostrarMensaje('📖 Read the hint...');
             victoryOverlay.classList.remove('active');
 
-            // Imagen solo en modo EASY
             if (estado.modo === 'facil') {
                 mostrarImagen();
             } else {
@@ -1387,14 +1362,12 @@
         // INICIALIZACIÓN
         // =========================================================
         (async function init() {
-            // Cargar modo guardado
             let modoInicial = 'facil';
             try {
                 modoInicial = localStorage.getItem('mystery_modo') || 'facil';
             } catch (e) {}
             seleccionarModo(modoInicial);
 
-            // Cargar frases desde TXT
             estado.frases = await cargarFrases();
             renderizarSelector();
 
